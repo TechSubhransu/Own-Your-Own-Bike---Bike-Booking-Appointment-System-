@@ -5,9 +5,11 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
 import random
+import json
 from renter.forms import *
 from rest_framework import generics
 from .serializers import BrandSerializer, BikeSerializer
+from django.shortcuts import redirect
 
 # Create your views here.
 
@@ -117,7 +119,7 @@ def renter_changepw(request):
         return HttpResponseRedirect(reverse('renter_otp'))
 
 def allbooking(request):
-    status_filter = request.GET.get('status')  # Get ?status=Approved/Pending/Rejected
+    status_filter = request.GET.get('status', '')  # Get ?status=Approved/Pending/Rejected
 
     if status_filter:
         allbookings = Booking.objects.filter(status=status_filter)
@@ -137,7 +139,6 @@ def approve(request, pk):
     allbookings = Booking.objects.all()
     d = {'allbookings':allbookings}
     return render(request, 'renter/allbooking.html', d)
-
 def reject(request, pk):
     BO = Booking.objects.get(pk=pk)
     BO.status = 'Reject'
@@ -146,7 +147,6 @@ def reject(request, pk):
     d = {'allbookings':allbookings}
     return render(request, 'renter/allbooking.html', d)
     
-
 def add_bikes(request):
     EBFO = BikeForm()
     d = {'EBFO': EBFO}
@@ -161,6 +161,27 @@ def renter_display(request, brand):
     bikes = Bike.objects.filter(company=brand)
     d = {'bikes': bikes, 'brand': brand}
     return render(request, 'renter/renter_home.html', d)
+
+def bike_map(request):
+    """Display available bikes on Google Map"""
+    bikes = Bike.objects.filter(is_available=True)
+    bikes_data = [
+        {
+            "id": b.id,
+            "name": b.bike_name,
+            "brand": b.company.company,
+            "price": b.price,
+            "latitude": b.latitude,
+            "longitude": b.longitude,
+            "image": b.photo.url if b.photo else "",
+        }
+        for b in bikes if b.latitude and b.longitude
+    ]
+
+    context = {
+        'bikes_json': json.dumps(bikes_data)
+    }
+    return render(request, 'renter/bike_map.html', context)
 
 #List all brands
 class BrandList(generics.ListCreateAPIView):

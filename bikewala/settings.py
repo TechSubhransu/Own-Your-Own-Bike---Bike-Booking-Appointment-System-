@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-26@8h7v&(39#04vawopap^8a0kw@!0ggp)71sbi*24w4b86jbq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'customer',
     'renter',
+    'chat',
+    # 'channels',
 ]
 
 MIDDLEWARE = [
@@ -61,7 +63,7 @@ ROOT_URLCONF = 'bikewala.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [TEMPLATES_DIRS],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -74,7 +76,16 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'bikewala.wsgi.application'
+# WSGI_APPLICATION = 'bikewala.wsgi.application'
+
+ASGI_APPLICATION = 'bikewala.asgi.application'
+
+# Channel Layer (using in-memory for local testing)
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 
 # Database
@@ -123,6 +134,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

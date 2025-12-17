@@ -1,0 +1,129 @@
+{% extends 'index.html' %}
+
+{% block title %}Bike Locations | BikeWala{% endblock title %}
+
+{% block body %}
+<div class="container-fluid py-4 text-center text-white">
+  <h2 class="fw-bold mb-4">🚴‍♂️ Available Bikes Near You</h2>
+  <div id="map"></div>
+</div>
+
+<style>
+  #map {
+    height: 80vh;
+    width: 90%;
+    margin: 0 auto 40px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
+  }
+
+  .bike-info {
+    text-align: center;
+    color: #fff;
+  }
+
+  .bike-info img {
+    width: 150px;
+    height: 100px;
+    border-radius: 8px;
+    margin-top: 5px;
+    object-fit: cover;
+  }
+
+  .gm-style .gm-style-iw-c {
+    background-color: #1f2937 !important;
+    color: #fff !important;
+    border-radius: 12px;
+    padding: 10px;
+  }
+
+  body {
+    background: linear-gradient(to right, #000000, #0f2027, #203a43, #2c5364);
+  }
+</style>
+
+<script>
+  // Convert bikes list from Django into JavaScript array
+  const bikes = JSON.parse('{{ bikes_json|escapejs }}');
+
+  function initMap() {
+    const defaultCenter = { lat: 20.2961, lng: 85.8245 }; // Bhubaneswar center
+
+    const map = new google.maps.Map(document.getElementById("map"), {
+      zoom: 13,
+      center: defaultCenter,
+      styles: [
+        { elementType: "geometry", stylers: [{ color: "#1d2c4d" }] },
+        { elementType: "labels.text.fill", stylers: [{ color: "#8ec3b9" }] },
+        { elementType: "labels.text.stroke", stylers: [{ color: "#1a3646" }] },
+        {
+          featureType: "road",
+          elementType: "geometry",
+          stylers: [{ color: "#304a7d" }],
+        },
+      ],
+    });
+
+    // Show user's current location (blue marker)
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const userPos = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+
+          map.setCenter(userPos);
+
+          new google.maps.Marker({
+            position: userPos,
+            map,
+            title: "Your Location",
+            icon: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+          });
+        },
+        () => console.warn("Geolocation permission denied.")
+      );
+    }
+
+    // Custom red bike icon
+    const bikeIcon = {
+      url: "https://cdn-icons-png.flaticon.com/512/2972/2972185.png",
+      scaledSize: new google.maps.Size(40, 40),
+    };
+
+    // Add bike markers dynamically
+    bikes.forEach((bike) => {
+      if (bike.latitude && bike.longitude) {
+        const marker = new google.maps.Marker({
+          position: { lat: bike.latitude, lng: bike.longitude },
+          map,
+          title: `${bike.brand} ${bike.name}`,
+          icon: bikeIcon,
+        });
+
+        const infoWindow = new google.maps.InfoWindow({
+          content: `
+            <div class="bike-info">
+              <h5>${bike.brand} ${bike.name}</h5>
+              <img src="${bike.image}" alt="${bike.name}">
+              <p><b>💰 Price:</b> ₹${bike.price}/day</p>
+              <a href="/book/${bike.id}/" class="btn btn-sm btn-success mt-2">Book Now</a>
+            </div>
+          `,
+        });
+
+        marker.addListener("click", () => {
+          infoWindow.open(map, marker);
+        });
+      }
+    });
+  }
+</script>
+
+<script
+  async
+  defer
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBfntRy9U4o-44dUK_RUZHUv3qjlZYXqhE&callback=initMap"
+></script>
+{% endblock body %}

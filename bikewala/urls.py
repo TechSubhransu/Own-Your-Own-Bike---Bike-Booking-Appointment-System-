@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('customer.urls')),
     path('renter/', include('renter.urls')),
+    path('chat/', include('chat.urls')),
     
     # REST API endpoints
     path('api/renter/', include('renter.urls')),

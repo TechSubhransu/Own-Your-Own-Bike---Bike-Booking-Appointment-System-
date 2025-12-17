@@ -1,0 +1,35 @@
+{% extends 'index.html' %}
+{% block title %}Live Support Chat{% endblock %}
+{% block body %}
+<div class="container text-center py-4">
+  <h3 class="text-white mb-4">💬 Live Support Chat</h3>
+  <div id="chat-box"
+       style="background:#1e293b;color:white;padding:15px;height:400px;overflow-y:scroll;border-radius:10px;">
+  </div>
+  <div class="input-group mt-3">
+    <input id="message-input" type="text" class="form-control" placeholder="Type your message...">
+    <button id="send-btn" class="btn btn-success">Send</button>
+  </div>
+</div>
+
+<script>
+  const chatSocket = new WebSocket(
+      'ws://' + window.location.host + '/ws/chat/'
+  );
+
+  chatSocket.onmessage = function(e) {
+      const data = JSON.parse(e.data);
+      document.querySelector('#chat-box').innerHTML +=
+          `<p><b>${data.username}:</b> ${data.message}</p>`;
+  };
+
+  document.querySelector('#send-btn').onclick = function() {
+      const messageInput = document.querySelector('#message-input');
+      const message = messageInput.value.trim();
+      if (message.length > 0) {
+          chatSocket.send(JSON.stringify({'message': message}));
+          messageInput.value = '';
+      }
+  };
+</script>
+{% endblock %}

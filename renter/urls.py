@@ -19,6 +19,7 @@ urlpatterns = [
     path('brands/', BrandList.as_view(), name='brand-list'),
     path('bikes/', BikeList.as_view(), name='bike-list'),
     path('bikes/<int:pk>/', BikeDetail.as_view(), name='bike-detail'),
+    path('map/', bike_map, name='bike_map'),
     # filter by brand (example: /renter/bikes/brand/Honda/)
     path('bikes/brand/<str:brand>/', BikesByBrand.as_view(), name='bikes-by-brand'),
      # filter by category (example: /renter/bikes/category/Scooter/)

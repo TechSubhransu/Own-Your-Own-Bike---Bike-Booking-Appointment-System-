@@ -15,5 +15,4 @@ urlpatterns = [
     path('search', search, name='search'),
     path('show<pk>', show, name='show'),
     path('my_bookings', my_bookings, name='my_bookings'),
-    
 ]
