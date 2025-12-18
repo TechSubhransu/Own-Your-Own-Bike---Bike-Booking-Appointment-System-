@@ -6,3 +6,5 @@ psycopg2-binary
 Pillow
 django-crispy-forms
 djangorestframework
+django-cloudinary-storage
+cloudinary

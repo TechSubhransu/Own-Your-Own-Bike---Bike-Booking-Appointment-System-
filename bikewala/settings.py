@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'customer',
     'renter',
     'chat',
+    'cloudinary',
+    'cloudinary_storage',
     # 'channels',
 ]
 
@@ -147,11 +149,12 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'munuparida550@gmail.com'
