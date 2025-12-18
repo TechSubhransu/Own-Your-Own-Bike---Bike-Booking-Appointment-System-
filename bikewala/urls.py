@@ -28,4 +28,10 @@ urlpatterns = [
     # REST API endpoints
     path('api/renter/', include('renter.urls')),
     path('api/customer/', include('customer.api_urls')),
-]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
+# ✅ Serve media ONLY in development
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT
+    )
